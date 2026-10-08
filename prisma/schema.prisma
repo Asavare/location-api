@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model State {
+  id        Int        @id @default(autoincrement())
+  code      String     @unique // Census state code, e.g. "33"
+  name      String     @unique
+  districts District[]
+  createdAt DateTime   @default(now())
+
+  @@index([name])
+}
+
+model District {
+  id           Int           @id @default(autoincrement())
+  code         String // Census district code
+  name         String
+  stateId      Int
+  state        State         @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  subDistricts SubDistrict[]
+  createdAt    DateTime      @default(now())
+
+  @@unique([stateId, code])
+  @@index([stateId])
+  @@index([name])
+}
+
+model SubDistrict {
+  id         Int       @id @default(autoincrement())
+  code       String // Census sub-district (tehsil / taluk / block) code
+  name       String
+  districtId Int
+  district   District  @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  villages   Village[]
+  createdAt  DateTime  @default(now())
+
+  @@unique([districtId, code])
+  @@index([districtId])
+  @@index([name])
+}
+
+model Village {
+  id            Int         @id @default(autoincrement())
+  code          String // Census village code
+  name          String
+  pincode       String?
+  subDistrictId Int
+  subDistrict   SubDistrict @relation(fields: [subDistrictId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([subDistrictId, code])
+  @@index([subDistrictId])
+  @@index([name])
+  @@index([pincode])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  apiKeyHash String  @unique // SHA-256 hash of the API key (key itself is never stored)
+  keyPrefix String // first 8 chars, for display
+  plan      String   @default("free")
+  isActive  Boolean  @default(true)
+  requests  Int      @default(0)
+  createdAt DateTime @default(now())
+}
