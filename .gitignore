@@ -4,3 +4,10 @@ node_modules/
 .DS_Store
 dist/
 coverage/
+
+# Large generated/source datasets
+data/PC11_TV_DIR.xlsx
+data/india-villages.csv
+data/india-villages-resume.csv
+data/india-villages-resume-with-header.csv
+data/test-fast-import.csv
