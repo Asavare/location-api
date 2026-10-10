@@ -11,6 +11,42 @@ const searchSchema = z.object({
 
 // GET /api/search?q=anna&limit=10
 // Autocomplete-style search across villages, returning the full hierarchy.
+
+/**
+ * @swagger
+ * /api/search:
+ *   get:
+ *     summary: Search Indian villages
+ *     description: Search village names and return their administrative hierarchy.
+ *     tags: [Search]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 2
+ *         description: Village name to search for.
+ *         example: anna
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 50
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: Matching villages and their locations.
+ *       400:
+ *         description: Invalid search query.
+ *       401:
+ *         description: Missing or invalid API key.
+ */
+
 router.get('/', async (req, res, next) => {
   try {
     const { q, limit } = searchSchema.parse(req.query);

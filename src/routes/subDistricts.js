@@ -4,7 +4,45 @@ const { parsePagination, paginated } = require('../utils/pagination');
 
 const router = express.Router();
 
-// GET /api/sub-districts?districtId=1&search=
+
+/**
+ * @swagger
+ * /api/sub-districts:
+ *   get:
+ *     tags:
+ *       - Sub-districts
+ *     summary: List sub-districts
+ *     description: Returns paginated sub-districts, optionally filtered by district and name.
+ *     parameters:
+ *       - in: query
+ *         name: districtId
+ *         schema:
+ *           type: integer
+ *         description: Filter by district ID.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search sub-district names (case-insensitive).
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *     responses:
+ *       200:
+ *         description: Paginated list of sub-districts.
+ *       400:
+ *         description: Invalid query parameters.
+ *       401:
+ *         description: Missing or invalid API key.
+ */
+
 router.get('/', async (req, res, next) => {
   try {
     const pg = parsePagination(req.query);
@@ -29,7 +67,32 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET /api/sub-districts/:id
+
+/**
+ * @swagger
+ * /api/sub-districts/{id}:
+ *   get:
+ *     tags:
+ *       - Sub-districts
+ *     summary: Get a sub-district by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Sub-district ID.
+ *     responses:
+ *       200:
+ *         description: Sub-district details, parent district and state, and village count.
+ *       400:
+ *         description: Invalid sub-district ID.
+ *       401:
+ *         description: Missing or invalid API key.
+ *       404:
+ *         description: Sub-district not found.
+ */
+
 router.get('/:id', async (req, res, next) => {
   try {
     const id = Number(req.params.id);
@@ -50,7 +113,40 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-// GET /api/sub-districts/:id/villages
+
+/**
+ * @swagger
+ * /api/sub-districts/{id}/villages:
+ *   get:
+ *     tags:
+ *       - Sub-districts
+ *     summary: List villages in a sub-district
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Sub-district ID.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *     responses:
+ *       200:
+ *         description: Paginated list of villages, including their codes and pincodes where available.
+ *       400:
+ *         description: Invalid sub-district ID or pagination parameters.
+ *       401:
+ *         description: Missing or invalid API key.
+ */
+
 router.get('/:id/villages', async (req, res, next) => {
   try {
     const id = Number(req.params.id);

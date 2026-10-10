@@ -29,7 +29,60 @@ function format(v) {
   };
 }
 
-// GET /api/villages?subDistrictId=&districtId=&stateId=&pincode=&search=
+
+/**
+ * @swagger
+ * /api/villages:
+ *   get:
+ *     tags:
+ *       - Villages
+ *     summary: List and filter villages
+ *     description: Returns paginated villages with their sub-district, district, and state.
+ *     parameters:
+ *       - in: query
+ *         name: subDistrictId
+ *         schema:
+ *           type: integer
+ *         description: Filter by sub-district ID.
+ *       - in: query
+ *         name: districtId
+ *         schema:
+ *           type: integer
+ *         description: Filter by district ID.
+ *       - in: query
+ *         name: stateId
+ *         schema:
+ *           type: integer
+ *         description: Filter by state ID.
+ *       - in: query
+ *         name: pincode
+ *         schema:
+ *           type: string
+ *         description: Filter by pincode where available.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search village names (case-insensitive).
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *     responses:
+ *       200:
+ *         description: Paginated list of villages.
+ *       400:
+ *         description: Invalid query parameters.
+ *       401:
+ *         description: Missing or invalid API key.
+ */
+
 router.get('/', async (req, res, next) => {
   try {
     const pg = parsePagination(req.query);
@@ -63,7 +116,32 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET /api/villages/:id
+
+/**
+ * @swagger
+ * /api/villages/{id}:
+ *   get:
+ *     tags:
+ *       - Villages
+ *     summary: Get a village by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Village ID.
+ *     responses:
+ *       200:
+ *         description: Village details with its location hierarchy.
+ *       400:
+ *         description: Invalid village ID.
+ *       401:
+ *         description: Missing or invalid API key.
+ *       404:
+ *         description: Village not found.
+ */
+
 router.get('/:id', async (req, res, next) => {
   try {
     const id = Number(req.params.id);

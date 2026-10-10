@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./docs/swagger");
 
 const prisma = require('./config/prisma');
 const { requireApiKey } = require('./middleware/auth');
@@ -35,8 +37,40 @@ const limiter = rateLimit({
   message: { error: 'Too many requests, please slow down.' },
 });
 app.use('/api', limiter);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     tags:
+ *       - General
+ *     summary: API information
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: API name, description, and endpoint list.
+ */
+
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     tags:
+ *       - General
+ *     summary: Check API and database health
+ *     description: Checks whether the API can connect to PostgreSQL.
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: API and database are healthy.
+ *       503:
+ *         description: Database connection failed.
+ */
 
 // Public
+
 app.get('/', (req, res) =>
   res.json({
     name: 'Location API',
